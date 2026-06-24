@@ -57,12 +57,9 @@ class PlannerAgent(BaseAgent):
     @exponential_backoff(max_retries=4, base_delay=1.0)
     async def _call_llm(self, user_prompt: str) -> str:
         response = await self.llm_client.chat.completions.create(
-            model="gpt-4o-mini",
-            response_format={"type": "json_object"},
-            messages=[
-                {"role": "system", "content": PLANNER_SYSTEM},
-                {"role": "user",   "content": user_prompt},
-            ],
+            model="gemini-2.0-flash",
+            contents=f"{PLANNER_SYSTEM}\n\nUser query: {user_prompt}",
+            config={"response_mime_type": "application/json"},
         )
         return response.choices[0].message.content
 
@@ -97,19 +94,15 @@ class FallbackCorrectionAgent(BaseAgent):
         data = json.loads(corrected)
         return Plan(**data)
 
+    # NEW
     @exponential_backoff(max_retries=3, base_delay=0.5)
     async def _repair(self, bad_payload: str, schema_hint: str) -> str:
-        response = await self.llm_client.chat.completions.create(
-            model="gpt-4o-mini",
-            response_format={"type": "json_object"},
-            messages=[
-                {"role": "system", "content": FALLBACK_SYSTEM},
-                {"role": "user",   "content": (
-                    f"Schema: {schema_hint}\n\nBroken payload:\n{bad_payload}"
-                )},
-            ],
+        response = await self.llm_client.aio.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=f"{FALLBACK_SYSTEM}\n\nSchema: {schema_hint}\n\nBroken payload:\n{bad_payload}",
+            config={"response_mime_type": "application/json"},
         )
-        return response.choices[0].message.content
+        return response.text
 
     async def _execute(self, instruction: str, context: dict) -> AsyncGenerator[str, None]:
         yield await self._repair(instruction, context.get("schema", ""))

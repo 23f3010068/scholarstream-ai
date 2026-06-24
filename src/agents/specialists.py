@@ -31,20 +31,15 @@ class RetrieverAgent(BaseAgent):
         async for chunk in self._stream_llm(instruction):
             yield chunk
 
+    # NEW
     @exponential_backoff(max_retries=4, base_delay=1.0)
     async def _stream_llm(self, instruction: str) -> AsyncGenerator[str, None]:
-        stream = await self.llm_client.chat.completions.create(
-            model="gpt-4o-mini",
-            stream=True,
-            messages=[
-                {"role": "system", "content": RETRIEVER_SYSTEM},
-                {"role": "user",   "content": instruction},
-            ],
-        )
-        async for chunk in stream:
-            delta = chunk.choices[0].delta.content
-            if delta:
-                yield delta
+        async for chunk in await self.llm_client.aio.models.generate_content_stream(
+            model="gemini-2.0-flash",
+            contents=f"{RETRIEVER_SYSTEM}\n\n{instruction}",
+        ):
+            if chunk.text:
+                yield chunk.text
 
 
 # ── Analyzer Agent ─────────────────────────────────────────────────────────────
@@ -70,20 +65,15 @@ class AnalyzerAgent(BaseAgent):
         async for chunk in self._stream_llm(prompt):
             yield chunk
 
+    # NEW
     @exponential_backoff(max_retries=4, base_delay=1.0)
     async def _stream_llm(self, prompt: str) -> AsyncGenerator[str, None]:
-        stream = await self.llm_client.chat.completions.create(
-            model="gpt-4o-mini",
-            stream=True,
-            messages=[
-                {"role": "system", "content": ANALYZER_SYSTEM},
-                {"role": "user",   "content": prompt},
-            ],
-        )
-        async for chunk in stream:
-            delta = chunk.choices[0].delta.content
-            if delta:
-                yield delta
+        async for chunk in await self.llm_client.aio.models.generate_content_stream(
+            model="gemini-2.0-flash",
+            contents=f"{ANALYZER_SYSTEM}\n\n{prompt}",
+        ):
+            if chunk.text:
+                yield chunk.text
 
 
 # ── Writer Agent ───────────────────────────────────────────────────────────────
@@ -109,17 +99,12 @@ class WriterAgent(BaseAgent):
         async for chunk in self._stream_llm(prompt):
             yield chunk
 
+    # NEW
     @exponential_backoff(max_retries=4, base_delay=1.0)
     async def _stream_llm(self, prompt: str) -> AsyncGenerator[str, None]:
-        stream = await self.llm_client.chat.completions.create(
-            model="gpt-4o-mini",
-            stream=True,
-            messages=[
-                {"role": "system", "content": WRITER_SYSTEM},
-                {"role": "user",   "content": prompt},
-            ],
-        )
-        async for chunk in stream:
-            delta = chunk.choices[0].delta.content
-            if delta:
-                yield delta
+        async for chunk in await self.llm_client.aio.models.generate_content_stream(
+            model="gemini-2.0-flash",
+            contents=f"{WRITER_SYSTEM}\n\n{prompt}",
+        ):
+            if chunk.text:
+                yield chunk.text

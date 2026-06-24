@@ -59,9 +59,10 @@ def main():
 
     setup_logging(args.debug)
 
-    api_key = "INVALID_KEY_FOR_DEMO" if args.demo_failure else os.getenv("OPENAI_API_KEY", "")
+    # NEW
+    api_key = "INVALID_KEY_FOR_DEMO" if args.demo_failure else os.getenv("GOOGLE_API_KEY", "")
     if not api_key:
-        console.print("[bold red]Error:[/bold red] OPENAI_API_KEY not set. Copy .env.example → .env and add your key.")
+        console.print("[bold red]Error:[/bold red] GOOGLE_API_KEY not set. Add it to your .env file.")
         sys.exit(1)
 
     asyncio.run(stream_pipeline(args.prompt, api_key))

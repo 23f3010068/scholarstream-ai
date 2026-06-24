@@ -11,7 +11,8 @@ import asyncio
 import logging
 from typing import AsyncGenerator
 
-from openai import AsyncOpenAI
+# from openai import AsyncOpenAI
+from google import genai
 
 from ..agents.planner import Plan, PlannerAgent, FallbackCorrectionAgent
 from ..agents.specialists import RetrieverAgent, AnalyzerAgent, WriterAgent
@@ -29,7 +30,7 @@ class Orchestrator:
     """
 
     def __init__(self, api_key: str):
-        self._client   = AsyncOpenAI(api_key=api_key)
+        self._client   = genai.Client(api_key=api_key)
         self._planner  = PlannerAgent(self._client)
         self._fallback = FallbackCorrectionAgent(self._client)
         self._agents   = {
