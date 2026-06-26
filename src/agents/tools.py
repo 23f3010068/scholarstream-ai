@@ -2,6 +2,9 @@ from __future__ import annotations
 import aiohttp
 import asyncio
 from langchain_core.tools import tool
+import asyncio
+import aiohttp
+from langchain_core.tools import tool
 
 
 # @tool
@@ -42,9 +45,6 @@ from langchain_core.tools import tool
 #                 return "\n---\n".join(result)
 #     except Exception as exc:
 #         return f"[Semantic Scholar] Request failed: {exc} — LLM will simulate papers instead."
-import asyncio
-import aiohttp
-from langchain_core.tools import tool
 
 @tool
 async def fetch_papers(query: str) -> str:
