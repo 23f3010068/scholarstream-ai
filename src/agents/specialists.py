@@ -35,7 +35,7 @@ class RetrieverAgent(BaseAgent):
         super().__init__("RetrieverAgent", llm_client)
 
     async def _execute(self, instruction: str, context: dict) -> AsyncGenerator[str, None]:
-        yield "📡 [Retriever] Querying knowledge base...\n"
+        yield " [Retriever] Querying knowledge base...\n"
         async for chunk in self._stream_llm(instruction):
             yield chunk
 

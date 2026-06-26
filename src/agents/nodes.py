@@ -49,7 +49,7 @@ async def planner_node(state: ResearchState, llm: ChatGroq) -> dict:
         content = raw.content if hasattr(raw, "content") else str(raw)
         content = content.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
         tasks = json.loads(content).get("tasks", [])
-        print(f"📋 [Planner] Plan ready: {len(tasks)} task(s)")
+        print(f" [Planner] Plan ready: {len(tasks)} task(s)")
         return {"tasks": tasks, "stream_log": [f"Planner decomposed into {len(tasks)} tasks"]}
     except (json.JSONDecodeError, KeyError) as exc:
         logger.warning("Planner bad JSON — routing to fallback: %s", exc)
@@ -94,11 +94,11 @@ async def retriever_node(state: ResearchState, llm: ChatGroq) -> dict:
     instruction = task["instruction"] if task else state["user_prompt"]
 
     tool_result = fetch_papers.invoke({"query": instruction})
-    print(f"\n📡 [Retriever] {tool_result}")
+    print(f"\n [Retriever] {tool_result}")
 
     chain = RETRIEVER_PROMPT | llm
     output = ""
-    print("📡 [Retriever] Streaming papers...", end="", flush=True)
+    print(" [Retriever] Streaming papers...", end="", flush=True)
     async for chunk in chain.astream({"instruction": instruction}):
         token = chunk.content if hasattr(chunk, "content") else str(chunk)
         print(token, end="", flush=True)
