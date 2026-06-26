@@ -1,4 +1,4 @@
-# 📚 ScholarStream AI — LangGraph Edition
+# 📚 ScholarStream AI
 > Agentic Research & Literature Review Engine | Task 1
 
 Built with **LangChain + LangGraph + Gemini**. A fully agentic pipeline that decomposes a complex
