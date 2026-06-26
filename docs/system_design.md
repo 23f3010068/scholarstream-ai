@@ -1,4 +1,4 @@
-# ScholarStream AI — System Design Document (LangGraph Edition)
+# ScholarStream AI — System Design Document
 
 ## 1. Overview
 
