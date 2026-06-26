@@ -10,7 +10,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from pydantic import ValidationError
 from .state import ResearchState
 from .tools import fetch_papers, extract_constraints, write_report
-from langchain_groq import ChatGroqimport
+from langchain_groq import ChatGroq
 import os
 from datetime import datetime
 logger = logging.getLogger(__name__)

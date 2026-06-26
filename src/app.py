@@ -4,7 +4,8 @@ import os
 import sys
 import streamlit as st
 from dotenv import load_dotenv
-
+import nest_asyncio
+nest_asyncio.apply()
 load_dotenv()
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.pipeline.graph import build_graph
