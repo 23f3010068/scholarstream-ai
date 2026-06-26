@@ -10,7 +10,9 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from pydantic import ValidationError
 from .state import ResearchState
 from .tools import fetch_papers, extract_constraints, write_report
-from langchain_groq import ChatGroq
+from langchain_groq import ChatGroqimport
+import os
+from datetime import datetime
 logger = logging.getLogger(__name__)
 
 
@@ -167,7 +169,17 @@ async def writer_node(state: ResearchState, llm: ChatGroq) -> dict:
         print(token, end="", flush=True)
         output += token
     print()
-    return {"writer_output": output, "stream_log": ["Writer completed"]}
+    os.makedirs("outputs", exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filepath = f"outputs/report_{timestamp}.md"
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(f"# ScholarStream AI Report\n")
+        f.write(f"**Query:** {state['user_prompt']}\n\n")
+        f.write(f"## Retrieved Papers\n{state.get('retriever_output','')}\n\n")
+        f.write(f"## Analysis\n{state.get('analyzer_output','')}\n\n")
+        f.write(f"## Final Report\n{output}\n")
+    print(f"\n Report saved → {filepath}")
+    return {"writer_output": output, "stream_log": ["Writer completed", f"Report saved to {filepath}"]}
 
 
 def _find_task(tasks: list[dict], agent_name: str) -> dict | None:
